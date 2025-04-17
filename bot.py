@@ -32,7 +32,11 @@ class EvaluationFunction:
             return weights / weights.sum()
         
         def calculate_filter(filter_values):
-            w1, w2, w3, d1, d2, d3, a3 = filter_values
+            # w1, w2, w3, d1, d2, d3, a3 = filter_values
+            w1, w2, w3 = filter_values[:3]
+            d1, d2, d3 = map(int, map(round, filter_values[3:6]))
+            a3 = float(filter_values[6])
+
             max_d = max(d1, d2, d3)
 
             filters = [

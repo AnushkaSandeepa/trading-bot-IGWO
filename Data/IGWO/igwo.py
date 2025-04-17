@@ -50,36 +50,39 @@ class IGWO:
             # Cosine adaptive control factor
             a = 2 * np.cos((iter / self.max_iter) * (np.pi / 2))
 
-            for i in range(self.n_agents):
-                for j in range(self.dim):
-                    r1, r2 = np.random.rand(), np.random.rand()
-                    A1 = 2 * a * r1 - a
-                    C1 = 2 * r2
-                    D_alpha = abs(C1 * alpha_pos[j] - agents[i][j])
-                    X1 = alpha_pos[j] - A1 * D_alpha
+            # Ensure leaders are initialized before attempting update
+            if alpha_pos is not None and beta_pos is not None and delta_pos is not None:
+                for i in range(self.n_agents):
+                    for j in range(self.dim):
+                        r1, r2 = np.random.rand(), np.random.rand()
+                        A1 = 2 * a * r1 - a
+                        C1 = 2 * r2
+                        D_alpha = abs(C1 * alpha_pos[j] - agents[i][j])
+                        X1 = alpha_pos[j] - A1 * D_alpha
 
-                    r1, r2 = np.random.rand(), np.random.rand()
-                    A2 = 2 * a * r1 - a
-                    C2 = 2 * r2
-                    D_beta = abs(C2 * beta_pos[j] - agents[i][j])
-                    X2 = beta_pos[j] - A2 * D_beta
+                        r1, r2 = np.random.rand(), np.random.rand()
+                        A2 = 2 * a * r1 - a
+                        C2 = 2 * r2
+                        D_beta = abs(C2 * beta_pos[j] - agents[i][j])
+                        X2 = beta_pos[j] - A2 * D_beta
 
-                    r1, r2 = np.random.rand(), np.random.rand()
-                    A3 = 2 * a * r1 - a
-                    C3 = 2 * r2
-                    D_delta = abs(C3 * delta_pos[j] - agents[i][j])
-                    X3 = delta_pos[j] - A3 * D_delta
+                        r1, r2 = np.random.rand(), np.random.rand()
+                        A3 = 2 * a * r1 - a
+                        C3 = 2 * r2
+                        D_delta = abs(C3 * delta_pos[j] - agents[i][j])
+                        X3 = delta_pos[j] - A3 * D_delta
 
-                    agents[i][j] = (X1 + X2 + X3) / 3
+                        agents[i][j] = (X1 + X2 + X3) / 3
+
 
             agents = self.clip_agents(agents)
 
-            # Gaussian mutation on alpha
-            mutated_alpha = self.gaussian_mutation(alpha_pos)
-            mutated_score = self.fitness_function(mutated_alpha)
-            if mutated_score < alpha_score:
-                alpha_score = mutated_score
-                alpha_pos = mutated_alpha
+            if alpha_pos is not None:
+                mutated_alpha = self.gaussian_mutation(alpha_pos)
+                mutated_score = self.fitness_function(mutated_alpha)
+                if mutated_score < alpha_score:
+                    alpha_score = mutated_score
+                    alpha_pos = mutated_alpha
 
             print(f"Iteration {iter + 1}/{self.max_iter}, Best Fitness: {alpha_score:.2f}")
 
