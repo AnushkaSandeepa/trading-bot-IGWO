@@ -2,8 +2,10 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import time
+import matplotlib
+matplotlib.use("Agg")  # Use non-GUI backend for headless environments
 
-class EvaluationFunction:
+class Evaluator:
     def __init__(self, csv_source, transaction_cost=0.03, start_date=None, end_date=None, starting_budget=1000):
         self.transaction_cost = transaction_cost
         self.money = starting_budget
@@ -20,19 +22,18 @@ class EvaluationFunction:
     
     def set_filters(self, low_filter, high_filter):
         def sma(N):
-            weights = np.ones(N)
-            return weights / weights.sum()
+            weights = np.array([1 for k in range(N)])
+            return weights * N
 
         def lma(N):
-            weights = np.linspace(N, 1, N)
-            return weights / weights.sum()
+            weights = np.array([1-k/N for k in range(N)])
+            return weights * (2/(N+1))
         
         def ema(N, alpha):
-            weights = np.array([(1 - alpha) ** i for i in range(N)])
-            return weights / weights.sum()
+            weights = np.array([(1 - alpha) ** k for k in range(N)])
+            return weights * alpha
         
         def calculate_filter(filter_values):
-            # w1, w2, w3, d1, d2, d3, a3 = filter_values
             w1, w2, w3 = filter_values[:3]
             d1, d2, d3 = map(int, map(round, filter_values[3:6]))
             a3 = float(filter_values[6])
@@ -64,6 +65,7 @@ class EvaluationFunction:
         plt.title("Low and High Filters")
         plt.xlabel("Index")
         plt.ylabel("Filter Value")
+        plt.ylim(ymin=0)
         plt.grid()
         plt.legend()
         plt.show()
@@ -104,32 +106,39 @@ class EvaluationFunction:
         self.df['profit'] = cash_column
         
         return cash_column[-1]
-        
-    def plot_signals(self):
-        plt.figure(figsize=(12, 6))
 
+    def plot_signals(self, save_path=None):
+
+        plt.figure(figsize=(12, 6))
         plt.plot(self.df.index, self.df["close"], label="Close", linewidth=0.5)
         plt.plot(self.df.index, self.df["low"], label="Low", linestyle="--", alpha=0.5)
         plt.plot(self.df.index, self.df["high"], label="High", linestyle="--", alpha=0.5)
 
-        plt.scatter(self.df.index[self.df['buy_signal']], self.df['close'][self.df['buy_signal']] + 2000, label="Buy Signal", marker="^", color="green", alpha=0.7, s=10)
-        plt.scatter(self.df.index[self.df['sell_signal']], self.df['close'][self.df['sell_signal']] + 2000, label="Sell Signal", marker="v", color="red", alpha=0.7, s=10)
+        plt.scatter(self.df.index[self.df['buy_signal']], self.df['close'][self.df['buy_signal']] + 2000,
+                    label="Buy Signal", marker="^", color="green", alpha=0.7, s=10)
+        plt.scatter(self.df.index[self.df['sell_signal']], self.df['close'][self.df['sell_signal']] + 2000,
+                    label="Sell Signal", marker="v", color="red", alpha=0.7, s=10)
 
-        plt.title("Bitcoin Stock Trading Signals and Profit")
+        plt.title("Bitcoin Trading Signals and Filters")
         plt.xlabel("Date")
         plt.ylabel("Price")
         plt.legend(loc="upper left")
         plt.grid()
-
         plt.xticks(rotation=45)
-        plt.show()
 
-# Block comment with triple quotes (best for quick disabling)
-"""
+        if save_path:
+            plt.savefig(save_path)
+            print("✅ Plot saved to", save_path)
+        else:
+            plt.show()
+
+        plt.close()
+
+
 if __name__ == "__main__":
     daily = "data/BTC-Daily.csv"
 
-    evaluator = EvaluationFunction(daily, start_date="2017-01-01", end_date="2020-01-01")
+    evaluator = Evaluator(daily, start_date="2017-01-01", end_date="2019-12-31")
     evaluator.set_filters([1, 0, 1, 10, 0, 10, 0.5], [1, 0, 0, 20, 0, 0, 0])
     evaluator.plot_filters()
     
@@ -138,4 +147,3 @@ if __name__ == "__main__":
     
     profit = evaluator.calculate_fitness()
     print(profit)
-"""
