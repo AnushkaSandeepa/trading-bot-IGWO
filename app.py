@@ -71,4 +71,4 @@ def run_and_display(n_clicks, selected_algo):
 
 # to run render.com
 if __name__ == "__main__":
-    app.run_server(host="0.0.0.0", port=8080, debug=False)
+    app.run(host="0.0.0.0", port=8080, debug=False)
