@@ -65,10 +65,7 @@ def run_and_display(n_clicks, selected_algo):
         return f"❌ Error running {selected_algo}: {str(e)}", ""
 
 
-# to run python app.py
-#if __name__ == "__main__":
-#    app.run(debug=True)
-
-# to run render.com
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080, debug=False)
+    host = "0.0.0.0" if "RENDER" in os.environ else "127.0.0.1"
+    port = 8080 if "RENDER" in os.environ else 8050
+    app.run(host=host, port=port, debug=True)

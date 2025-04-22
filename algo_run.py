@@ -9,6 +9,13 @@ import matplotlib
 matplotlib.use("Agg")
 
 def run_igwo():
+    
+    assert os.path.exists("data/BTC-Daily.csv"), "BTC-Daily.csv is missing"
+    assert os.path.exists("results"), "results directory is missing"
+    assert os.path.exists("IGWO/igwo.py"), "igwo.py is missing"
+    assert os.path.exists("ACO/aco.py"), "aco.py is missing"
+    assert os.path.exists("bot.py"), "bot.py is missing"
+    
     lb = [0, 0, 0, 2, 2, 2, 0.1] * 2
     ub = [1, 1, 1, 60, 60, 60, 1.0] * 2
 
