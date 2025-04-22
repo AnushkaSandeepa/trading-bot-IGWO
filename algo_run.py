@@ -10,7 +10,7 @@ matplotlib.use("Agg")
 
 def run_igwo():
     
-    assert os.path.exists("data/BTC-Daily.csv"), "BTC-Daily.csv is missing"
+    assert os.path.exists("Data/BTC-Daily.csv"), "BTC-Daily.csv is missing"
     assert os.path.exists("results"), "results directory is missing"
     assert os.path.exists("IGWO/igwo.py"), "igwo.py is missing"
     assert os.path.exists("ACO/aco.py"), "aco.py is missing"
@@ -23,7 +23,7 @@ def run_igwo():
         try:
             low_filter = params[:7]
             high_filter = params[7:]
-            evaluator_train = Evaluator("data/BTC-Daily.csv", start_date="2017-01-01", end_date="2019-12-31")
+            evaluator_train = Evaluator("Data/BTC-Daily.csv", start_date="2017-01-01", end_date="2019-12-31")
             evaluator_train.set_filters(low_filter, high_filter)
             evaluator_train.generate_signals()
             return -evaluator_train.calculate_fitness()
@@ -37,7 +37,7 @@ def run_igwo():
     elapsed_time = time.time() - start_time
 
     if best_params is not None:
-        evaluator_test = Evaluator("data/BTC-Daily.csv", start_date="2020-01-01", end_date="2022-12-31")
+        evaluator_test = Evaluator("Data/BTC-Daily.csv", start_date="2020-01-01", end_date="2022-12-31")
         evaluator_test.set_filters(best_params[:7], best_params[7:])
         evaluator_test.generate_signals()
 
@@ -51,7 +51,7 @@ def run_igwo():
         raise ValueError("IGWO optimization failed. No valid parameters found.")
 
 def run_aco():
-    data_path = os.path.abspath(os.path.join("data", "BTC-Daily.csv"))
+    data_path = os.path.abspath(os.path.join("Data", "BTC-Daily.csv"))
     start_time = time.time()
     optimizer = ACOOptimizer(Evaluator, data_path, n_ants=20, n_iterations=30)
     best_params, _ = optimizer.run()
