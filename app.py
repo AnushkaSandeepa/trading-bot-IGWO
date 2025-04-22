@@ -64,5 +64,11 @@ def run_and_display(n_clicks, selected_algo):
     except Exception as e:
         return f"❌ Error running {selected_algo}: {str(e)}", ""
 
+
+# to run python app.py
+#if __name__ == "__main__":
+#    app.run(debug=True)
+
+# to run render.com
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run_server(host="0.0.0.0", port=8080, debug=False)
